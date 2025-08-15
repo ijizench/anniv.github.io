@@ -38,6 +38,7 @@
       color:var(--ink); overflow-x:hidden; 
       font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; scroll-behavior:smooth;
       filter: saturate(var(--sat)) brightness(var(--bri));
+      
     }
 
     /* ---------- HERO / OPENING ---------- */
@@ -48,10 +49,10 @@
     .headline{color:#f2f5ff; text-align:center; max-width:900px}
     .headline .title{font-family:'Cormorant Garamond', serif; font-weight:700; font-size:clamp(2.2rem, 5.2vw, 4.2rem); line-height:1.08; letter-spacing:.3px}
     .headline .tag{font-size:clamp(.60rem, 2.4vw, 1.15rem); opacity:.9}
-    .typewriter{ font-size: 6vw; font-family: 'Poppins', sans-serif; border-right:2px solid rgba(255,255,255,.65); white-space:nowrap; overflow:hidden}
+    .typewriter{ font-size: 4vw; font-family: 'Poppins', sans-serif; border-right:2px solid rgba(255,255,255,.65); white-space:nowrap; overflow:hidden}
     .cntr {
   height: 400px;
-  width: 400px;
+  width: 400px; 
   position: relative;
 }
 
@@ -311,7 +312,7 @@
 
 
   .image-popup {
-  position: absolute; /* tetap fixed biar overlay full layar */
+  position: absolute; /* fixed supaya tetap menutupi layar penuh */
   inset: 0;
   background: rgba(0,0,0,0.4);
   backdrop-filter: blur(8px);
@@ -322,6 +323,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 5vw; /* beri jarak agar di layar kecil tidak nempel pinggir */
+  box-sizing: border-box;
 }
 
 .image-popup.active {
@@ -330,12 +333,26 @@
 }
 
 .image-popup img {
-  position: absolute; /* jangan fixed, biar ikut posisi flex container */
+  position: absolute; /* biar ikut flex container */
   border-radius: 12px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-  max-width: 80vw;   /* batas lebar maksimum 90% layar */
-  max-height: 50vh;  /* batas tinggi maksimum 90% layar */
+  max-width: 100%;
+  max-height: 80vh;
+  height: auto;
+  object-fit: contain;
   transition: all 0.4s ease;
+}
+
+/* Responsif untuk layar kecil (Android, < 480px) */
+@media (max-width: 480px) {
+  .image-popup {
+    padding: 4vw;
+  }
+
+  .image-popup img {
+    max-width: 100%;
+    max-height: 75vh; /* lebih kecil supaya tidak kepotong */
+  }
 }
 
     /* Scroll indicator */
@@ -421,10 +438,60 @@
     @media (prefers-reduced-motion: reduce){
       *, *::before, *::after{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important}
     }
+     #overlayBg {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9998;
+  }
+
+  /* Notifikasi bar */
+  #musicNotify {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #ff9fc0;
+    color: #333;
+    padding: 25px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 9999; /* di atas overlay */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: slideDown 0.4s ease;
+  }
+
+  #musicNotify button {
+    background: #fff2f6;
+    outline: 2px solid #ff4081;
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  #musicNotify button:hover {
+    background: #ff9fc0;
+  }
+
+  @keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
    
   </style>
 </head>
 <body>
+  <div id="overlayBg"></div>
+  <div id="musicNotify">
+  
+  <button id="playMusicBtn">Happy Anniversary!</button>
+  <span>⬅ Click</span>
+</div>
   <!-- Sounds -->
   <audio id="bgm" preload="auto" src="assets/bgm.mp3"></audio>
   <audio id="chime" preload="auto" src="assets/chime.mp3"></audio>
@@ -604,28 +671,43 @@
 <script>
   
   // ---------- Typewriter ----------
-  const twEl = document.getElementById('typewriter');
-  const TW_TEXT = 'Happy Anniversary Amor!!';
-  let twIdx = 0;
-   const bgm = document.getElementById('bgm');
+   const twEl = document.getElementById('typewriter');
+    const TW_TEXT = 'Happy Anniversary Amor!!';
+    let twIdx = 0;
+
+    const bgm = document.getElementById('bgm');
+    function startMusicOnce() {
+  bgm.play().catch(()=>{});
+}
     if (bgm) bgm.loop = true;
-    let musicStarted = false;
-    function startMusicOnce(){
-    if (musicStarted || !bgm) return;
-    bgm.play().then(()=>{ musicStarted = true; })
-      .catch(()=>{ /* kalau ditolak browser, biarkan tombol manual */ });
-  }
-  
-  (function typeLoop(){
-      if (twIdx === Math.floor(TW_TEXT.length / 2)) startMusicOnce();
-    if(twIdx <= TW_TEXT.length){
-      twEl.textContent = TW_TEXT.slice(0, twIdx++);
-      setTimeout(typeLoop, 70);
-      
-    } else {
-      twEl.style.borderRight = '0';
+
+    // Notifikasi
+    const notifyBar = document.getElementById('musicNotify');
+    const playBtn = document.getElementById('playMusicBtn');
+    const overlay = document.getElementById('overlayBg');
+
+    function startTypewriter(){
+      (function typeLoop(){
+        if(twIdx <= TW_TEXT.length){
+          twEl.textContent = TW_TEXT.slice(0, twIdx++);
+          setTimeout(typeLoop, 70);
+        } else {
+          twEl.style.borderRight = '0';
+        }
+      })();
     }
-  })();
+    
+
+    playBtn.addEventListener('click', () => {
+      bgm.play().then(() => {
+        notifyBar.style.display = 'none';
+        overlay.style.display='none';
+        
+        startTypewriter();
+      }).catch(err => {
+        alert('Gagal memutar musik: ' + err);
+      });
+    })
 
   // ---------- Elemen yang dipakai ----------
   const hero = document.getElementById('hero');
