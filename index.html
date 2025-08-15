@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Happy Anniversary</title>
+  <title>Happy Anniversary, My Love — Interaktif</title>
 
   <!-- Fonts & Swiper -->
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -47,7 +47,7 @@
 
     .headline{color:#f2f5ff; text-align:center; max-width:900px}
     .headline .title{font-family:'Cormorant Garamond', serif; font-weight:700; font-size:clamp(2.2rem, 5.2vw, 4.2rem); line-height:1.08; letter-spacing:.3px}
-    .headline .tag{font-size:clamp(.95rem, 2.4vw, 1.15rem); opacity:.9}
+    .headline .tag{font-size:clamp(.60rem, 2.4vw, 1.15rem); opacity:.9}
     .typewriter{ font-size: 4vw; font-family: 'Poppins', sans-serif; border-right:2px solid rgba(255,255,255,.65); white-space:nowrap; overflow:hidden}
     .cntr {
   height: 400px;
@@ -310,8 +310,8 @@
 }
 
 
-   .image-popup {
-  position: absolute;
+  .image-popup {
+  position: absolute; /* tetap fixed biar overlay full layar */
   inset: 0;
   background: rgba(0,0,0,0.4);
   backdrop-filter: blur(8px);
@@ -319,17 +319,27 @@
   pointer-events: none;
   transition: opacity 0.35s ease;
   z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 .image-popup.active {
   opacity: 1;
   pointer-events: auto;
 }
+
 .image-popup img {
-  position: absolute;
+  position: absolute; /* jangan fixed, biar ikut posisi flex container */
   border-radius: 12px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  max-width: 90vw;   /* batas lebar maksimum 90% layar */
+  max-height: 90vh;  /* batas tinggi maksimum 90% layar */
+  width: auto;       /* supaya rasio tetap */
+  height: auto;
   transition: all 0.4s ease;
 }
+
     /* Scroll indicator */
     .scroll-tip{position:absolute; bottom:22px; left:50%; transform:translateX(-50%); color:#cdd8ff; opacity:.9; display:grid; justify-items:center; gap:.35rem}
     .mouse{width:24px; height:36px; border:2px solid #cdd8ff; border-radius:16px; position:relative}
