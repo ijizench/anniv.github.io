@@ -38,6 +38,7 @@
       color:var(--ink); overflow-x:hidden; 
       font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; scroll-behavior:smooth;
       filter: saturate(var(--sat)) brightness(var(--bri));
+      
     }
 
     /* ---------- HERO / OPENING ---------- */
@@ -47,11 +48,11 @@
 
     .headline{color:#f2f5ff; text-align:center; max-width:900px}
     .headline .title{font-family:'Cormorant Garamond', serif; font-weight:700; font-size:clamp(2.2rem, 5.2vw, 4.2rem); line-height:1.08; letter-spacing:.3px}
-    .headline .tag{font-size:clamp(.95rem, 2.4vw, 1.15rem); opacity:.9}
-    .typewriter{ font-family: 'Poppins', sans-serif; border-right:2px solid rgba(255,255,255,.65); white-space:nowrap; overflow:hidden}
+    .headline .tag{font-size:clamp(.60rem, 2.4vw, 1.15rem); opacity:.9}
+    .typewriter{ font-size: 4vw; font-family: 'Poppins', sans-serif; border-right:2px solid rgba(255,255,255,.65); white-space:nowrap; overflow:hidden}
     .cntr {
   height: 400px;
-  width: 400px;
+  width: 400px; 
   position: relative;
 }
 
@@ -310,8 +311,8 @@
 }
 
 
-   .image-popup {
-  position: absolute;
+  .image-popup {
+  position: absolute; /* fixed supaya tetap menutupi layar penuh */
   inset: 0;
   background: rgba(0,0,0,0.4);
   backdrop-filter: blur(8px);
@@ -319,17 +320,42 @@
   pointer-events: none;
   transition: opacity 0.35s ease;
   z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5vw; /* beri jarak agar di layar kecil tidak nempel pinggir */
+  box-sizing: border-box;
 }
+
 .image-popup.active {
   opacity: 1;
   pointer-events: auto;
 }
+
 .image-popup img {
-  position: absolute;
+  position: absolute; /* biar ikut flex container */
   border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  max-width: 100%;
+  max-height: 80vh;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
   transition: all 0.4s ease;
+
 }
+
+/* Responsif untuk layar kecil (Android, < 480px) */
+@media (max-width: 480px) {
+  .image-popup {
+    padding: 4vw;
+  }
+
+  .image-popup img {
+    max-width: 100%;
+    max-height: 75vh; /* lebih kecil supaya tidak kepotong */
+  }
+}
+
     /* Scroll indicator */
     .scroll-tip{position:absolute; bottom:22px; left:50%; transform:translateX(-50%); color:#cdd8ff; opacity:.9; display:grid; justify-items:center; gap:.35rem}
     .mouse{width:24px; height:36px; border:2px solid #cdd8ff; border-radius:16px; position:relative}
@@ -413,10 +439,35 @@
     @media (prefers-reduced-motion: reduce){
       *, *::before, *::after{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important}
     }
+
+    
+    #overlayBg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.5s ease;
+  z-index: 9999;
+}
+
+#overlayBg.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+
    
   </style>
 </head>
 <body>
+  <div id="overlayBg"></div>
+
   <!-- Sounds -->
   <audio id="bgm" preload="auto" src="assets/bgm.mp3"></audio>
   <audio id="chime" preload="auto" src="assets/chime.mp3"></audio>
@@ -596,66 +647,355 @@
 <script>
   
   // ---------- Typewriter ----------
-  const twEl = document.getElementById('typewriter');
-  const TW_TEXT = 'Happy Anniversary Amor!!';
-  let twIdx = 0;
-   const bgm = document.getElementById('bgm');
-    if (bgm) bgm.loop = true;
-    let musicStarted = false;
-    function startMusicOnce(){
-    if (musicStarted || !bgm) return;
-    bgm.play().then(()=>{ musicStarted = true; })
-      .catch(()=>{ /* kalau ditolak browser, biarkan tombol manual */ });
-  }
-  
-  (function typeLoop(){
-      if (twIdx === Math.floor(TW_TEXT.length / 2)) startMusicOnce();
-    if(twIdx <= TW_TEXT.length){
+ // ---------- Scroll Lock System ----------
+let scrollLocked = false;
+let scrollPosition = 0;
+
+function lockScroll() {
+  if (scrollLocked) return;
+  scrollPosition = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollPosition}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
+  document.body.style.overflow = 'hidden';
+  scrollLocked = true;
+}
+
+function unlockScroll() {
+  if (!scrollLocked) return;
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
+  document.body.style.overflow = '';
+  window.scrollTo(0, scrollPosition);
+  scrollLocked = false;
+}
+
+// ---------- Typewriter ----------
+const twEl = document.getElementById('typewriter');
+const TW_TEXT = 'Happy Anniversary Amor!!';
+let twIdx = 0;
+function startTypewriter() {
+  (function typeLoop() {
+    if (twIdx <= TW_TEXT.length) {
       twEl.textContent = TW_TEXT.slice(0, twIdx++);
       setTimeout(typeLoop, 70);
-      
     } else {
       twEl.style.borderRight = '0';
     }
   })();
+}
+startTypewriter();
 
-  // ---------- Elemen yang dipakai ----------
-  const hero = document.getElementById('hero');
-  const replayOpen = document.getElementById('replayOpen');
-  const chime = document.getElementById('chime');
-  const musicBtn = document.getElementById('toggleMusic');
-  const musicFloating = document.getElementById('musicFloating');
+// ---------- Musik ----------
+const bgm = document.getElementById('bgm');
+if (bgm) bgm.loop = true;
 
+function startMusicOnce() {
+  bgm.play().catch(() => {});
+}
 
-  document.addEventListener('DOMContentLoaded', () => {
+// Auto pause/resume saat tab berpindah
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    bgm.pause();
+  } else {
+    bgm.play().catch(() => {});
+  }
+});
+
+// ---------- Overlay ----------
+const overlay = document.getElementById('overlayBg');
+lockScroll(); // kunci scroll saat overlay tampil
+
+overlay.addEventListener('click', () => {
+  bgm.play().then(() => {
+    overlay.classList.add('fade-out');
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      unlockScroll(); // buka scroll setelah overlay hilang
+    }, 500);
+  }).catch(err => alert('Gagal memutar musik: ' + err));
+});
+
+// ---------- Autoplay musik saat interaksi pertama ----------
+window.addEventListener('scroll', startMusicOnce, { once: true, passive: true });
+window.addEventListener('pointerdown', startMusicOnce, { once: true });
+window.addEventListener('touchstart', startMusicOnce, { once: true, passive: true });
+window.addEventListener('keydown', startMusicOnce, { once: true });
+
+// ---------- Tombol Musik ----------
+const musicBtn = document.getElementById('toggleMusic');
+const musicFloating = document.getElementById('musicFloating');
+function toggleMusic() {
+  if (!bgm) return;
+  if (bgm.paused) bgm.play().catch(() => {});
+  else bgm.pause();
+}
+musicBtn?.addEventListener('click', toggleMusic);
+musicFloating?.addEventListener('click', toggleMusic);
+
+// ---------- Replay ----------
+const replayOpen = document.getElementById('replayOpen');
+replayOpen?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+// ---------- Settings sliders ----------
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsPanel = document.getElementById('settingsPanel');
+const softness = document.getElementById('softness');
+const brightness = document.getElementById('brightness');
+settingsBtn?.addEventListener('click', () => settingsPanel.classList.toggle('open'));
+function applyTuning() {
+  const sat = (parseInt(softness?.value ?? '95', 10) || 95) / 100;
+  const bri = (parseInt(brightness?.value ?? '100', 10) || 100) / 100;
+  document.documentElement.style.setProperty('--sat', sat);
+  document.documentElement.style.setProperty('--bri', bri);
+}
+softness?.addEventListener('input', applyTuning);
+brightness?.addEventListener('input', applyTuning);
+applyTuning();
+
+// ---------- Quiz Logic ----------
+const opts = document.querySelectorAll('.quiz .opt');
+const qMsg = document.getElementById('qMsg');
+const chime = document.getElementById('chime');
+let quizPassed = false;
+
+opts.forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (quizPassed) return;
+    const isCorrect = btn.dataset.correct === 'true';
+
+    if (isCorrect) {
+      btn.classList.add('correct');
+      qMsg.textContent = 'Yeay! Lets go to the next page💕';
+      chime?.play?.();
+      quizPassed = true;
+      unlockScroll();
+      setTimeout(() => document.getElementById('gallery')
+        .scrollIntoView({ behavior: 'smooth' }), 900);
+    } else {
+      btn.classList.add('wrong');
+      qMsg.textContent = 'TU NO ME AMAS!! 😒';
+      setTimeout(() => btn.classList.remove('wrong'), 400);
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const quizSection = document.getElementById('quiz');
+  if (!quizSection) return;
+  const io = new IntersectionObserver((entries) => {
+    const e = entries[0];
+    if (e.isIntersecting && !quizPassed && !scrollLocked) {
+      const targetY = Math.round(window.scrollY + quizSection.getBoundingClientRect().top);
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+      setTimeout(() => { if (!quizPassed) lockScroll(); }, 250);
+    }
+  }, { threshold: 0.5 });
+  io.observe(quizSection);
+});
+
+// ---------- Puzzle ----------
+const board = document.getElementById('board');
+const pzlMsg = document.getElementById('pzlMsg');
+const shuffleBtn = document.getElementById('shuffleBtn');
+const revealBtn = document.getElementById('revealBtn');
+const SIZE = 3;
+let tiles = [];
+
+function buildBoard() {
+  board.innerHTML = '';
+  tiles = [];
+  const img = board.dataset.img;
+  const w = board.clientWidth;
+  const h = board.clientHeight;
+  const pw = w / SIZE;
+  const ph = h / SIZE;
+
+  for (let r = 0; r < SIZE; r++) {
+    for (let c = 0; c < SIZE; c++) {
+      const i = r * SIZE + c;
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.draggable = true;
+      tile.dataset.correct = i;
+      tile.dataset.current = i;
+      tile.style.backgroundImage = `url('${img}')`;
+      tile.style.backgroundSize = `${w}px ${h}px`;
+      tile.style.backgroundPosition = `-${c * pw}px -${r * ph}px`;
+      board.appendChild(tile);
+      tiles.push(tile);
+    }
+  }
+  attachDnD();
+}
+
+function shuffleTiles() {
+  const order = [...Array(SIZE * SIZE).keys()];
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  order.forEach((origIndex, pos) => {
+    const t = tiles[origIndex];
+    t.dataset.current = pos;
+    board.appendChild(t);
+  });
+  pzlMsg.textContent = 'Drag or tap the tiles to arrange the image.';
+  tiles.forEach(tile => tile.classList.remove('tile-correct'));
+  lockScroll(); // puzzle mulai
+}
+
+function isSolved() {
+  return tiles.every(t => t.dataset.current === t.dataset.correct);
+}
+
+function attachDnD() {
+  let src = null;
+  tiles.forEach(t => {
+    t.addEventListener('dragstart', e => {
+      src = t;
+      e.dataTransfer.setData('text/plain', t.dataset.current);
+    });
+    t.addEventListener('dragover', e => e.preventDefault());
+    t.addEventListener('drop', e => {
+      e.preventDefault();
+      if (!src || src === t) return;
+      swapTiles(src, t);
+    });
+    t.addEventListener('touchstart', e => {
+      src = t;
+      t.classList.add('tile-active');
+      e.preventDefault();
+    }, { passive: false });
+    t.addEventListener('touchmove', e => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      tiles.forEach(tile => tile.classList.remove('tile-hover'));
+      if (target && target.classList.contains('tile') && target !== src) {
+        target.classList.add('tile-hover');
+      }
+    }, { passive: false });
+    t.addEventListener('touchend', e => {
+      e.preventDefault();
+      const touch = e.changedTouches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      tiles.forEach(tile => tile.classList.remove('tile-active', 'tile-hover'));
+      if (target && target.classList.contains('tile') && target !== src) {
+        swapTiles(src, target);
+      }
+      src = null;
+    }, { passive: false });
+  });
+}
+
+function swapTiles(aTile, bTile) {
+  const a = aTile.dataset.current;
+  const b = bTile.dataset.current;
+  const aNext = aTile.nextSibling;
+  const bNext = bTile.nextSibling;
+  const parent = aTile.parentNode;
+  parent.insertBefore(aTile, bNext);
+  parent.insertBefore(bTile, aNext);
+  aTile.dataset.current = b;
+  bTile.dataset.current = a;
+  if (isSolved()) solvedAction();
+}
+
+function solvedAction() {
+  tiles.forEach(tile => tile.classList.add('tile-correct'));
+  unlockScroll(); // puzzle selesai
+  pzlMsg.innerHTML = '🎉 You have completed the puzzle! Special Message : <b>Tu eres hong 💕</b>';
+  chime?.play?.();
+}
+
+function revealSolution() {
+  tiles.sort((a, b) => a.dataset.correct - b.dataset.correct).forEach(t => {
+    board.appendChild(t);
+    t.dataset.current = t.dataset.correct;
+  });
+  solvedAction();
+}
+
+window.addEventListener('load', () => { buildBoard(); shuffleTiles(); });
+window.addEventListener('resize', () => { buildBoard(); shuffleTiles(); });
+shuffleBtn?.addEventListener('click', shuffleTiles);
+revealBtn?.addEventListener('click', revealSolution);
+
+// ---------- Timeline reveal ----------
+const tlItems = document.querySelectorAll('.tl li');
+const tlObs = new IntersectionObserver((entries) => {
+  entries.forEach(en => { if (en.isIntersecting) en.target.classList.add('reveal'); });
+}, { threshold: 0.25 });
+tlItems.forEach(i => tlObs.observe(i));
+
+// ---------- Swiper ----------
+const swiper = new Swiper('#mainSwiper', {
+  loop: true,
+  centeredSlides: true,
+  speed: 700,
+  autoplay: { delay: 2800, disableOnInteraction: false },
+  effect: 'coverflow',
+  coverflowEffect: { rotate: 24, stretch: 0, depth: 140, modifier: 1, slideShadows: false },
+  slidesPerView: 1,
+  breakpoints: { 720: { slidesPerView: 1.05 }, 1024: { slidesPerView: 1.15 } },
+  pagination: { el: '.swiper-pagination', clickable: true },
+  navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
+});
+
+const story = document.getElementById('story');
+function updateStory() {
+  const slide = swiper.slides[swiper.activeIndex];
+  const cap = slide?.querySelector('.slide-card')?.dataset?.caption || '';
+  if (cap) { story.textContent = cap; story.classList.add('show'); }
+}
+swiper.on('slideChange', updateStory);
+setTimeout(updateStory, 600);
+
+const gallerySection = document.getElementById('gallery');
+const galleryObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) swiper.autoplay.start();
+    else swiper.autoplay.stop();
+  });
+}, { threshold: 0.2 });
+galleryObs.observe(gallerySection);
+
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+document.getElementById('mainSwiper').addEventListener('click', (e) => {
+  const img = e.target.closest('img');
+  if (!img) return;
+  lightboxImg.src = img.src;
+  lightbox.classList.add('open');
+});
+lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+
+// ---------- Popup Timeline Image ----------
+document.addEventListener('DOMContentLoaded', () => {
   const tl = document.getElementById('tl');
   const popup = document.getElementById('imagePopup');
   const popupImg = popup.querySelector('img');
-
-  let startRect = null; // posisi awal
+  let startRect = null;
 
   tl.addEventListener('click', (e) => {
     const li = e.target.closest('li');
     if (!li || !li.dataset.img) return;
-
-    // ambil posisi li di layar
     const rect = li.getBoundingClientRect();
     startRect = rect;
-
-    // set gambar & posisi awal
     popupImg.src = li.dataset.img;
     popupImg.style.top = rect.top + 'px';
     popupImg.style.left = rect.left + 'px';
     popupImg.style.width = rect.width + 'px';
     popupImg.style.height = rect.height + 'px';
-
-    // tampilkan overlay
     popup.classList.add('active');
-
     popup.scrollIntoView({ behavior: 'smooth', block: 'center' });
- 
-
-    // animasi ke fullscreen
     requestAnimationFrame(() => {
       popupImg.style.top = '50%';
       popupImg.style.left = '50%';
@@ -667,361 +1007,18 @@
 
   popup.addEventListener('click', () => {
     if (!startRect) return;
-    // animasi kembali ke posisi awal
     popupImg.style.top = startRect.top + 'px';
     popupImg.style.left = startRect.left + 'px';
     popupImg.style.width = startRect.width + 'px';
     popupImg.style.height = startRect.height + 'px';
     popupImg.style.transform = 'none';
-
-    // tunggu animasi selesai lalu tutup overlay
-    setTimeout(() => {
-      popup.classList.remove('active');
-    }, 400);
+    setTimeout(() => popup.classList.remove('active'), 400);
   });
 });
-  // Pastikan loop
 
-
-  // ---------- Autoplay musik saat interaksi pertama ----------
-
-  
-  // Anggap interaksi: scroll, klik/ketuk, sentuh, keyboard
-  window.addEventListener('scroll', startMusicOnce, { once:true, passive:true });
-  window.addEventListener('pointerdown', startMusicOnce, { once:true });
-  window.addEventListener('touchstart', startMusicOnce, { once:true, passive:true });
-  window.addEventListener('keydown', startMusicOnce, { once:true });
-
-  // ---------- Tombol Musik ----------
-  function toggleMusic(){
-    if (!bgm) return;
-    if (bgm.paused){ bgm.play().catch(()=>{}); }
-    else { bgm.pause(); }
-  }
-  musicBtn?.addEventListener('click', toggleMusic);
-  musicFloating?.addEventListener('click', toggleMusic);
-
-  // ---------- Replay: scroll ke atas ----------
-  replayOpen?.addEventListener('click', ()=>{
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-
-  // ---------- Settings sliders ----------
-  const settingsBtn = document.getElementById('settingsBtn');
-  const settingsPanel = document.getElementById('settingsPanel');
-  const softness = document.getElementById('softness');
-  const brightness = document.getElementById('brightness');
-  settingsBtn?.addEventListener('click', ()=> settingsPanel.classList.toggle('open'));
-  function applyTuning(){
-    const sat = (parseInt(softness?.value ?? '95',10)||95)/100;
-    const bri = (parseInt(brightness?.value ?? '100',10)||100)/100;
-    document.documentElement.style.setProperty('--sat', sat);
-    document.documentElement.style.setProperty('--bri', bri);
-  }
-  softness?.addEventListener('input', applyTuning);
-  brightness?.addEventListener('input', applyTuning);
-  applyTuning();
-
-  // ---------- Quiz Logic ----------
-  // Fungsi Lock & Unlock Scroll
-let scrollPosition = 0;
-function lockScroll() {
-  scrollPosition = window.scrollY;
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${scrollPosition}px`;
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.style.overflow = 'hidden';
-}
-function unlockScroll() {
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  document.body.style.overflow = '';
-  window.scrollTo(0, scrollPosition);
-}
-
-// Quiz logic
-// === 1) Utility: Lock & Unlock Scroll (tambahkan di global) ===
-let scrollLocked = false;
-
-function lockScroll() {
-  if (scrollLocked) return;
-  scrollPosition = window.scrollY;
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${scrollPosition}px`;
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.style.overflow = 'hidden';
-  scrollLocked = true;
-}
-
-function unlockScroll() {
-  if (!scrollLocked) return;
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  document.body.style.overflow = '';
-  window.scrollTo(0, scrollPosition);
-  scrollLocked = false;
-}
-
-// === 2) Kode quiz kamu (TAMBAHKAN unlockScroll() saat benar) ===
-const opts = document.querySelectorAll('.quiz .opt');
-const qMsg = document.getElementById('qMsg');
-let quizPassed = false;
-
-opts.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    if(quizPassed) return;
-    const isCorrect = btn.dataset.correct === 'true';
-
-    if(isCorrect){
-      btn.classList.add('correct');
-      qMsg.textContent = 'Yeay! Lets go to the next page💕';
-      chime?.play?.();
-      quizPassed = true;
-
-      // ⬇️ Buka scroll setelah jawabannya benar
-      unlockScroll();
-
-      setTimeout(()=> document.getElementById('gallery')
-        .scrollIntoView({behavior:'smooth'}), 900);
-
-    }else{
-      btn.classList.add('wrong');
-      qMsg.textContent = 'TU NO ME AMAS!! 😒';
-      setTimeout(()=> btn.classList.remove('wrong'), 400);
-      // Tidak perlu lock di sini, karena sudah terkunci sejak masuk quiz
-    }
-  })
-})
-
-// === 3) Kunci scroll otomatis saat memasuki section quiz ===
-// Pastikan ID section quiz kamu adalah #quiz
-document.addEventListener('DOMContentLoaded', () => {
-  const quizSection = document.getElementById('quiz');
-  if (!quizSection) return;
-
-  // Bila user menggulir hingga quiz terlihat (≥50%), snap ke atas quiz lalu kunci
-  const io = new IntersectionObserver((entries) => {
-    const e = entries[0];
-    if (e.isIntersecting && !quizPassed && !scrollLocked) {
-      // Snap ke awal section quiz
-      const targetY = Math.round(window.scrollY + quizSection.getBoundingClientRect().top);
-      window.scrollTo({ top: targetY, behavior: 'smooth' });
-
-      // Kunci sedikit setelah posisi stabil
-      setTimeout(() => { 
-        if (!quizPassed) lockScroll();
-      }, 250);
-    }
-  }, { threshold: 0.5 });
-
-  io.observe(quizSection);
-});
-
-
-
-  // ---------- Swiper (Gallery) + Story ----------
-  const swiper = new Swiper('#mainSwiper', {
-    loop: true,
-    centeredSlides: true,
-    speed: 700,
-    autoplay: { delay: 2800, disableOnInteraction: false },
-    effect: 'coverflow',
-    coverflowEffect: { rotate: 24, stretch: 0, depth: 140, modifier: 1, slideShadows: false },
-    slidesPerView: 1,
-    breakpoints: { 720: { slidesPerView: 1.05 }, 1024: { slidesPerView: 1.15 } },
-    pagination: { el: '.swiper-pagination', clickable: true },
-    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
-  });
-
-  const story = document.getElementById('story');
-  function updateStory(){
-    const slide = swiper.slides[swiper.activeIndex];
-    const cap = slide?.querySelector('.slide-card')?.dataset?.caption || '';
-    if(cap){ story.textContent = cap; story.classList.add('show'); }
-  }
-  swiper.on('slideChange', updateStory);
-  setTimeout(updateStory, 600);
-
-  // Pause autoplay saat galeri tak terlihat
-  const gallerySection = document.getElementById('gallery');
-  const galleryObs = new IntersectionObserver(entries=>{
-    entries.forEach(e=>{ if(e.isIntersecting){ swiper.autoplay.start(); } else { swiper.autoplay.stop(); } })
-  }, {threshold:.2});
-  galleryObs.observe(gallerySection);
-
-  // Lightbox
-  const lightbox = document.getElementById('lightbox');
-  const lightboxImg = document.getElementById('lightboxImg');
-  document.getElementById('mainSwiper').addEventListener('click', (e)=>{
-    const img = e.target.closest('img'); if(!img) return; lightboxImg.src = img.src; lightbox.classList.add('open');
-  });
-  lightbox.addEventListener('click', ()=> lightbox.classList.remove('open'));
-
-  // ---------- Timeline reveal ----------
-  const tlItems = document.querySelectorAll('.tl li');
-  const tlObs = new IntersectionObserver((entries)=>{
-    entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('reveal'); } });
-  }, { threshold: .25 });
-  tlItems.forEach(i=> tlObs.observe(i));
-
-  // ---------- Puzzle (Drag & Drop) ----------
-const board = document.getElementById('board');
-const pzlMsg = document.getElementById('pzlMsg');
-const shuffleBtn = document.getElementById('shuffleBtn');
-const revealBtn = document.getElementById('revealBtn');
-
-const SIZE = 3;
-let tiles = [];
-
-function buildBoard(){
-  board.innerHTML = '';
-  tiles = [];
-  const img = board.dataset.img;
-  const w = board.clientWidth;
-  const h = board.clientHeight;
-  const pw = w / SIZE;
-  const ph = h / SIZE;
-
-  for(let r=0; r<SIZE; r++){
-    for(let c=0; c<SIZE; c++){
-      const i = r*SIZE + c;
-      const tile = document.createElement('div');
-      tile.className = 'tile';
-      tile.draggable = true;
-      tile.dataset.correct = i;
-      tile.dataset.current = i;
-      tile.style.backgroundImage = `url('${img}')`;
-      tile.style.backgroundSize = `${w}px ${h}px`;
-      tile.style.backgroundPosition = `-${c*pw}px -${r*ph}px`;
-      board.appendChild(tile);
-      tiles.push(tile);
-    }
-  }
-  attachDnD();
-}
-
-function shuffleTiles(){
-  const order = [...Array(SIZE*SIZE).keys()];
-  for(let i=order.length-1; i>0; i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-  order.forEach((origIndex, pos)=>{
-    const t = tiles[origIndex];
-    t.dataset.current = pos;
-    board.appendChild(t);
-  });
-  pzlMsg.textContent = 'Drag or tap the tiles to arrange the image.';
-
-  // 🔒 Lock scroll (puzzle belum selesai)
-
-  // Hapus highlight sebelumnya
-  tiles.forEach(tile => tile.classList.remove('tile-correct'));
-}
-
-function isSolved(){
-  return tiles.every(t => t.dataset.current === t.dataset.correct);
-}
-
-// Gabungan drag-and-drop & touch
-function attachDnD(){
-  let src = null;
-
-  tiles.forEach(t=>{
-    // --- Drag & Drop (desktop) ---
-    t.addEventListener('dragstart', e=>{
-      src = t;
-      e.dataTransfer.setData('text/plain', t.dataset.current);
-    });
-    t.addEventListener('dragover', e=> e.preventDefault());
-    t.addEventListener('drop', e=>{
-      e.preventDefault();
-      if(!src || src===t) return;
-      swapTiles(src, t);
-    });
-
-    // --- Sentuhan (mobile) ---
-    t.addEventListener('touchstart', e=>{
-      src = t;
-      t.classList.add('tile-active');
-      e.preventDefault();
-    }, { passive: false });
-
-    t.addEventListener('touchmove', e=>{
-      e.preventDefault();
-      const touch = e.touches[0];
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
-      tiles.forEach(tile => tile.classList.remove('tile-hover'));
-      if(target && target.classList.contains('tile') && target !== src){
-        target.classList.add('tile-hover');
-      }
-    }, { passive: false });
-
-    t.addEventListener('touchend', e=>{
-      e.preventDefault();
-      const touch = e.changedTouches[0];
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
-      tiles.forEach(tile => tile.classList.remove('tile-active', 'tile-hover'));
-
-      if(target && target.classList.contains('tile') && target !== src){
-        swapTiles(src, target);
-      }
-      src = null;
-    }, { passive: false });
-  });
-}
-
-// Fungsi tukar ubin (dipakai untuk mouse & touch)
-function swapTiles(aTile, bTile){
-  const a = aTile.dataset.current;
-  const b = bTile.dataset.current;
-
-  const aNext = aTile.nextSibling;
-  const bNext = bTile.nextSibling;
-  const parent = aTile.parentNode;
-
-  parent.insertBefore(aTile, bNext);
-  parent.insertBefore(bTile, aNext);
-
-  aTile.dataset.current = b;
-  bTile.dataset.current = a;
-
-  if(isSolved()) solvedAction();
-}
-
-function solvedAction(){
-  // Highlight hijau semua ubin
-  tiles.forEach(tile => tile.classList.add('tile-correct'));
-
-  // 🔓 Unlock scroll (puzzle selesai)
-    unlockScroll();
-
-  pzlMsg.innerHTML = '🎉 You have completed the puzzle! Special Message : <b>Tu eres hong 💕</b>';
-  chime?.play?.();
-}
-
-function revealSolution(){
-  tiles.sort((a,b)=> a.dataset.correct - b.dataset.correct).forEach(t=>{
-    board.appendChild(t);
-    t.dataset.current = t.dataset.correct;
-  });
-  solvedAction();
-}
-
-window.addEventListener('load', ()=>{ buildBoard(); shuffleTiles(); });
-window.addEventListener('resize', ()=>{ buildBoard(); shuffleTiles(); });
-shuffleBtn?.addEventListener('click', shuffleTiles);
-revealBtn?.addEventListener('click', revealSolution);
-
-
-   window.history.scrollRestoration = "manual";
+window.history.scrollRestoration = "manual";
 window.scrollTo(0, 0);
+
   
 </script>
 
