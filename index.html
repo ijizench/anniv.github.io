@@ -49,7 +49,7 @@
     .headline{color:#f2f5ff; text-align:center; max-width:900px}
     .headline .title{font-family:'Cormorant Garamond', serif; font-weight:700; font-size:clamp(2.2rem, 5.2vw, 4.2rem); line-height:1.08; letter-spacing:.3px}
     .headline .tag{font-size:clamp(.60rem, 2.4vw, 1.15rem); opacity:.9}
-    .typewriter{ font-size: 4vw; font-family: 'Poppins', sans-serif; border-right:2px solid rgba(255,255,255,.65); white-space:nowrap; overflow:hidden}
+    .typewriter{ font-size: 5vw; font-family: 'Poppins', sans-serif; border-right:2px solid rgba(255,255,255,.65); white-space:nowrap; overflow:hidden}
     .cntr {
   height: 400px;
   width: 400px; 
@@ -102,7 +102,7 @@
   position: absolute;
   border-top-left-radius: 100px;
   border-top-right-radius: 100px;
-  animation: body 12s none infinite;
+  animation: body 10s none infinite;
 }
 
 .cat .head {
@@ -377,19 +377,41 @@
     .quiz .opt.wrong{border-color:var(--red); animation:shake .35s}
     @keyframes shake{10%,90%{transform:translateX(-2px)} 20%,80%{transform:translateX(4px)} 30%,50%,70%{transform:translateX(-6px)} 40%,60%{transform:translateX(6px)}}
     .gallery{background:#fff}
-    .swiper{width:100%; height:520px}
-    .swiper-slide{display:flex; align-items:center; justify-content:center}
-    .slide-card{width:100%; height:100%; border-radius:20px; overflow:hidden; box-shadow:0 16px 40px rgba(226,85,134,.18)}
-    .slide-card img, .slide-card video{width:100%; height:100%; object-fit:cover}
-    .swiper-pagination-bullet{background:var(--pink-dark) !important; opacity:.35}
-    .swiper-pagination-bullet-active{opacity:1}
-    .swiper-button-prev, .swiper-button-next{color:var(--pink-dark)}
-    .story{max-width:900px; margin:18px auto 0; text-align:center; opacity:0; transform:translateY(8px); transition:all .35s}
-    .story.show{opacity:1; transform:none }
-    .lightbox{position:absolute; inset:0; background:rgba(0,0,0,.84); display:none; align-items:center; justify-content:center; z-index:60}
-    .lightbox.open{display:flex}
-    .lightbox img{max-width:92vw; max-height:86vh; border-radius:18px; box-shadow:0 24px 60px rgba(0,0,0,.5); transform:scale(.96); transition:transform .25s}
-    .lightbox.open img{transform:scale(1)}
+    .swiper { width: 100%; height: 520px; }
+.swiper-slide { display: flex; align-items: center; justify-content: center; }
+.slide-card { width: 100%; height: 100%; border-radius: 20px; overflow: hidden; box-shadow: 0 16px 40px rgba(226,85,134,.18); }
+.slide-card img, .slide-card video { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+
+.swiper-pagination-bullet { background: var(--pink-dark) !important; opacity: .35; }
+.swiper-pagination-bullet-active { opacity: 1; }
+.swiper-button-prev, .swiper-button-next { color: var(--pink-dark); }
+
+.story { max-width: 900px; margin: 18px auto 0; text-align: center; opacity: 0; transform: translateY(8px); transition: all .35s; }
+.story.show { opacity: 1; transform: none; }
+
+.lightbox {
+  position: absolute; inset: 0; 
+  background: rgba(0,0,0,.84); 
+  display: none; 
+  align-items: center; justify-content: center; 
+  z-index: 60;
+  padding: 12px;
+}
+.lightbox.open { display: flex; }
+
+.lightbox img, .lightbox video {
+  max-width: 92vw;
+  max-height: 86vh;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.5);
+  transform: scale(.96);
+  transition: transform .25s;
+}
+
+.lightbox.open img, .lightbox.open video {
+  transform: scale(1);
+}
+
     .timeline{background:linear-gradient(#fff, #fff2f6)}
     .tl{position:relative; margin:0; padding:0; list-style:none}
     .tl::before{content:""; position:absolute; left:50%; top:0; bottom:0; width:4px; background:linear-gradient(var(--gold), #ffe2b8); border-radius:3px; transform:translateX(-50%)}
@@ -529,7 +551,9 @@
     <div class="container" style="width:min(1100px,92%); margin-inline:auto">
       <div class="card">
         <div class="sec-head"><span class="bar"></span><h2 class="title" style="margin:0">For Us</h2></div>
-        <p class="muted">Terima kasih telah menjadi rumah paling hangat. Di bawah ini ada galeri kenangan, quiz seru, puzzle rahasia, dan timeline momen penting kita. Semoga halaman ini selalu mengingatkan bahwa cinta kita tumbuh setiap hari. 💞</p>
+        <p class="muted">I think it's beautiful how two people who don't know each other at all can be brought together by the essence of love, and I hope this love will last for many years to come.I wish you and I a happy, healthy and lovely life together in the future...<br> Happy Anniversary mi amorr!💞</p>
+
+      </div>
       </div>
     </div>
   </section>
@@ -558,18 +582,18 @@
       <div class="swiper" id="mainSwiper">
         <div class="swiper-wrapper">
           <!-- Ganti src dengan file kalian -->
-          <div class="swiper-slide"><figure class="slide-card" data-caption="Pertama kali kita jalan bareng di kafe favorit."><img src="assets/photo1.jpg" alt="Momen 1" loading="lazy"></figure></div>
-          <div class="swiper-slide"><figure class="slide-card" data-caption="Foto candid waktu hujan, tapi senyummu tetap hangat."><video src="assets/video1.mp4" muted loop playsinline></video></figure></div>
-          <div class="swiper-slide"><figure class="slide-card" data-caption="Sunset yang kita saksikan berdua — tenang banget."><img src="assets/photo2.jpg" alt="Momen 3" loading="lazy"></figure></div>
-          <div class="swiper-slide"><figure class="slide-card" data-caption="Video singkat perjalanan pertama kita."><video src="assets/video2.mp4" muted loop playsinline></video></figure></div>
-          <div class="swiper-slide"><figure class="slide-card" data-caption="Momen spesial yang bikin aku jatuh cinta lagi."><img src="assets/photo3.jpg" alt="Momen 4" loading="lazy"></figure></div>
+          <div class="swiper-slide"><figure class="slide-card" data-caption=""><img src="assets/photo1.jpg" alt="Momen 1" loading="lazy"></figure></div>
+          <div class="swiper-slide"><figure class="slide-card" data-caption=""><video src="assets/video1.mp4" muted loop playsinline></video></figure></div>
+          <div class="swiper-slide"><figure class="slide-card" data-caption=""><img src="assets/photo2.jpg" alt="Momen 3" loading="lazy"></figure></div>
+          <div class="swiper-slide"><figure class="slide-card" data-caption=""><video src="assets/video2.mp4" muted loop playsinline></video></figure></div>
+          <div class="swiper-slide"><figure class="slide-card" data-caption=""><img src="assets/photo3.jpg" alt="Momen 4" loading="lazy"></figure></div>
         </div>
         <div class="swiper-pagination"></div>
         <div class="swiper-button-prev" aria-label="Sebelumnya"></div>
         <div class="swiper-button-next" aria-label="Berikutnya"></div>
       </div>
 
-      <div id="story" class="story muted">Click on the photo to enlarge it. The photo story will appear here.</div>
+      <div id="story" class="story muted">Click on the photo to enlarge it</div>
     </div>
 
     <!-- Lightbox -->
@@ -598,10 +622,10 @@
     <div class="container" style="width:min(1100px,92%); margin-inline:auto">
       <div class="sec-head"><span class="bar"></span><h2 class="title" style="margin:0">The timeline of our love</h2></div>
       <ul class="tl" id="tl">
-        <li ><span class="dot"></span><article><time>13 AUGUST 2024</time><h4>First meeting</h4><p>We met at Grandma's, and at that time we followed each other's movements,I still remember the clothes you wore. you looked like a soft cloud....</p></article></li>
+        <li data-img="assets/FM.jpg"><span class="dot"></span><article><time>13 AUGUST 2024</time><h4>First meeting</h4><p>We met at Grandma's, and at that time we followed each other's movements,I still remember the clothes you wore. you looked like a soft cloud....</p></article></li>
         <li data-img="assets/FS.jpg" ><span class="dot"></span><article><time>14 AUGUST 2024</time><h4>Love at First Sight</h4><p>After that, we always played together. When I first met you, I felt that I was compatible with your attitude and way of thinking. I like that part of you</p></article></li>
-        <li><span class="dot"></span><article><time>16 AUGUST 2024</time><h4>A promise</h4><p>I decided to express my feelings to you. I told you that I loved you and wanted to grow old with you 💕</p></article></li>
-        <li data-img="assets/JY.png"><span class="dot"></span><article><time>2024-2025</time><h4>Our Journey</h4><p>We have been together until now, sharing each other's happiness and sadness, the pain of separation and the joy of love itself. We have been through many things with interesting stories.</p></article></li>
+        <li data-img="assets/PR.jpg"><span class="dot"></span><article><time>16 AUGUST 2024</time><h4>A promise</h4><p>I decided to express my feelings to you. I told you that I loved you and wanted to grow old with you 💕</p></article></li>
+        <li data-img="assets/JY.jpg"><span class="dot"></span><article><time>2024-2025</time><h4>Our Journey</h4><p>We have been together until now, sharing each other's happiness and sadness, the pain of separation and the joy of love itself. We have been through many things with interesting stories.</p></article></li>
         <li data-img="assets/AN.jpg"><span class="dot"></span><article><time>2025</time><h4>Special Anniversary</h4><p>This page is for you — a digital hug that never tires, I will always be there for you even though we are far apart... Te amo con todo mi corazon💖</p></article></li>
       </ul>
       <div class="image-popup" id="imagePopup">
@@ -675,6 +699,14 @@ function unlockScroll() {
   scrollLocked = false;
 }
 
+function safeUnlock() {
+  const overlayVisible =
+    overlay && overlay.style.display !== 'none' && !overlay.classList.contains('fade-out');
+  if (!overlayVisible && scrollLocked) {
+    unlockScroll();
+  }
+}
+
 // ---------- Typewriter ----------
 const twEl = document.getElementById('typewriter');
 const TW_TEXT = 'Happy Anniversary Amor!!';
@@ -705,6 +737,7 @@ document.addEventListener('visibilitychange', () => {
     bgm.pause();
   } else {
     bgm.play().catch(() => {});
+    safeUnlock();
   }
 });
 
@@ -721,6 +754,10 @@ overlay.addEventListener('click', () => {
     }, 500);
   }).catch(err => alert('Gagal memutar musik: ' + err));
 });
+
+
+
+
 
 // ---------- Autoplay musik saat interaksi pertama ----------
 window.addEventListener('scroll', startMusicOnce, { once: true, passive: true });
@@ -848,7 +885,7 @@ function shuffleTiles() {
   });
   pzlMsg.textContent = 'Drag or tap the tiles to arrange the image.';
   tiles.forEach(tile => tile.classList.remove('tile-correct'));
-  lockScroll(); // puzzle mulai
+ 
 }
 
 function isSolved() {
@@ -910,7 +947,6 @@ function swapTiles(aTile, bTile) {
 
 function solvedAction() {
   tiles.forEach(tile => tile.classList.add('tile-correct'));
-  unlockScroll(); // puzzle selesai
   pzlMsg.innerHTML = '🎉 You have completed the puzzle! Special Message : <b>Tu eres hong 💕</b>';
   chime?.play?.();
 }
@@ -936,6 +972,7 @@ const tlObs = new IntersectionObserver((entries) => {
 tlItems.forEach(i => tlObs.observe(i));
 
 // ---------- Swiper ----------
+// ---------- Swiper ----------
 const swiper = new Swiper('#mainSwiper', {
   loop: true,
   centeredSlides: true,
@@ -950,14 +987,34 @@ const swiper = new Swiper('#mainSwiper', {
 });
 
 const story = document.getElementById('story');
-function updateStory() {
-  const slide = swiper.slides[swiper.activeIndex];
-  const cap = slide?.querySelector('.slide-card')?.dataset?.caption || '';
-  if (cap) { story.textContent = cap; story.classList.add('show'); }
-}
-swiper.on('slideChange', updateStory);
-setTimeout(updateStory, 600);
 
+function updateSlideContent() {
+  const slide = swiper.slides[swiper.activeIndex];
+
+  // --- Update caption ---
+  const cap = slide?.querySelector('.slide-card')?.dataset?.caption || '';
+  if (cap) {
+    story.textContent = cap;
+    story.classList.add('show');
+  }
+
+  // --- Handle video ---
+  document.querySelectorAll('#mainSwiper video').forEach(v => v.pause()); // pause semua video
+  const video = slide.querySelector('video');
+  if (video) {
+    video.play().catch(() => {
+      console.log('Video autoplay gagal. Pastikan muted & playsinline.');
+    });
+  }
+}
+
+// Panggil saat slide berubah (setelah animasi selesai)
+swiper.on('slideChangeTransitionEnd', updateSlideContent);
+
+// Panggil sekali saat load untuk slide pertama
+updateSlideContent();
+
+// ---------- Autoplay berdasarkan viewport ----------
 const gallerySection = document.getElementById('gallery');
 const galleryObs = new IntersectionObserver(entries => {
   entries.forEach(e => {
@@ -967,15 +1024,53 @@ const galleryObs = new IntersectionObserver(entries => {
 }, { threshold: 0.2 });
 galleryObs.observe(gallerySection);
 
+// ---------- Lightbox ----------
 const lightbox = document.getElementById('lightbox');
 const lightboxImg = document.getElementById('lightboxImg');
+
 document.getElementById('mainSwiper').addEventListener('click', (e) => {
-  const img = e.target.closest('img');
-  if (!img) return;
-  lightboxImg.src = img.src;
+  const slide = e.target.closest('.slide-card');
+  if (!slide) return;
+
+  // Reset lightbox dulu
+  lightboxImg.src = '';
+  lightboxImg.style.display = 'none';
+
+  // Hapus video lama jika ada
+  const oldVideo = lightbox.querySelector('video');
+  if (oldVideo) oldVideo.remove();
+
+  const img = slide.querySelector('img');
+  const video = slide.querySelector('video');
+
+  if (img) {
+    lightboxImg.src = img.src;
+    lightboxImg.style.display = 'block';
+  } else if (video) {
+    const lbVideo = document.createElement('video');
+    lbVideo.src = video.src;
+    lbVideo.controls = true;
+    lbVideo.autoplay = true;
+    lbVideo.loop = true;
+    lbVideo.muted = video.muted; // agar autoplay lancar
+    lbVideo.playsInline = true;
+    lbVideo.style.width = '100%';
+    lightbox.appendChild(lbVideo);
+  }
+
   lightbox.classList.add('open');
 });
-lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+
+// Tutup lightbox
+lightbox.addEventListener('click', () => {
+  lightbox.classList.remove('open');
+
+  // Hentikan video saat ditutup
+  const v = lightbox.querySelector('video');
+  if (v) v.pause();
+});
+
+
 
 // ---------- Popup Timeline Image ----------
 document.addEventListener('DOMContentLoaded', () => {
